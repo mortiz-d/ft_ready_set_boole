@@ -1,8 +1,5 @@
 #include "boole.hpp"
 
-
-
-
 Kargnauth_Map::Kargnauth_Map()
 {
     return;
@@ -14,7 +11,7 @@ Kargnauth_Map::~Kargnauth_Map()
 }
 
 
-void Kargnauth_Map::generate_kmap(const std::string& expr)
+bool Kargnauth_Map::generate_kmap(const std::string& expr)
 {
     std::set<std::string> vars = obtainVariables(expr);
     std::set<std::string>::iterator it;
@@ -25,10 +22,10 @@ void Kargnauth_Map::generate_kmap(const std::string& expr)
     this->tree.build_Simplified(expr);
 
     int n = vars.size();
-    if (n < 2 )
+    if (n < 2)
     {
-        std::cerr << "Needs at least 2 or more variables to deploy a kargnauth map" << std::endl;
-        return;
+        std::cout << "Needs at least 2 or more variables to deploy a kargnauth map" << std::endl;
+        return false;
     }
 
     // Divide in left & right
@@ -62,6 +59,8 @@ void Kargnauth_Map::generate_kmap(const std::string& expr)
             this->kmap[i][j] = this->tree.calculate(input); //We insert the result into the kmap table
         }
     }
+
+    return true;
 }
 
 
@@ -106,47 +105,39 @@ void Kargnauth_Map::print_kmap(void) const
 //THIS NEEDS STILL SOME WORK TO DO
 bool Kargnauth_Map::check_sector(int y ,int x, int y_end, int x_end, int mode)
 {
-    int x_start = 0, y_start = 0;
+    int x_start = x, y_start = y;
     Cube area;
 
+    x_start = x;
+    y_start = y;
 
-    while (y_start < y_end)
+    for (int y_ending = 0; y_ending < y_end; y_ending++)
     {
-        if (y+y_start >= (int)this->kmap.size() )
+        if (y_start >= (int)this->kmap.size())
+            y_start -= this->kmap.size();
+        for (int x_ending = 0; x_ending < x_end; x_ending++)
         {
-                // std::cout << "Wrap around y" << std::endl;
-                y -= this->kmap.size();
-        }
-        
-        while (x_start < x_end)
-        {
-            if (x+x_start >= (int)this->kmap[0].size() )
-            {
-                // std::cout << "Wrap around x" << std::endl;
-                x -= this->kmap[0].size();
+            if (x_start >= (int)this->kmap[0].size())
+                x_start -= this->kmap[0].size();
 
-            }
-            // std::cout << "Compruebo"<< y+y_start << x+x_start << "->" << this->kmap[y+y_start][x+x_start] << std::endl;
             if (mode)
             {
-                this->kmap_unchecked[y+y_start][x+x_start] = false;
-                area.columns.insert(y+y_start);
-                area.rows.insert(x+x_start);
+                this->kmap_unchecked[y_start][x_start] = false;
+                area.columns.insert(y_start);
+                area.rows.insert(x_start);
             }
-            if (this->kmap[y+y_start][x+x_start] == false)
+
+            if (this->kmap[y_start][x_start] == false)
                 return false;
             x_start++;
         }
-        x_start = 0;
+        x_start = x;
         y_start++;
+
     }
 
     if (mode)
-    {
         this->validated_areas.push_back(area);
-        // std::cout << "Added arena" << std::endl;
-    }
-
     
     return true;
 }
@@ -162,29 +153,40 @@ bool Kargnauth_Map::find_aceptable_group (int col, int row)
     int group_size = 2;
     std::stack<int> group_sizes;
 
-    for (int i = 1; i < n_max_casillas; i= i * 2)
+    for (int i = 1; i <= n_max_casillas; i= i * 2)
     group_sizes.push(i);
+    (void) col;
+    (void) row;
+    
     while (group_size > 1)
     {
         group_size = group_sizes.top();
         group_sizes.pop();
+        // if (col == 1 && row == 3)
         // std::cout << "Agrupando de " << group_size << " en " << group_size << std::endl; 
         x_size = group_size;
         y_size = 1;
         while (y_size <= group_size)
         {
-            // std::cout << "Prueba de y: " << col << " x: " << row  << " a y:" << y_size << " x: " << x_size << std::endl;
+
+            if (y_size > (int) this->kmap.size() || x_size > (int)this->kmap[0].size())
+            {
+                // std::cout << "La prueba de y:"<< y_size<< " x: "<<x_size<< " no sepuede realizar por que exigimos demasiado tamaño limit y:"<< this->kmap.size() << " limit x: "<< this->kmap[0].size()  << std::endl;
+                y_size = y_size * 2;
+                x_size = x_size / 2;
+                continue;
+            }
+            
+            // std::cout <<"? ["<<col<<"]"<<"["<<row<<"]" <<"Size y :" << y_size << " Size x: " << x_size << std::endl;
             if (check_sector(col,row,y_size,x_size, 0))
             {
-                // std::cout << "Prueba de y: " << col << " x: " << row  << " a y:" << y_size << " x: " << x_size << " es buena" << std::endl;
-                // std::cout << "La prueba es buena!" << std::endl;
+                // std::cout <<"✅ ["<<col<<"]"<<"["<<row<<"]" <<"Size y :" << y_size << " Size x: " << x_size << std::endl;
                 check_sector(col,row,y_size,x_size, 1);
                 // this->kmap_unchecked[col][row] = false;
                 return true;
             }
-            // else
-                // std::cout << "La prueba es mala!" << std::endl;
-            // check_sector(col,row,y_size,x_size);
+            else
+                // std::cout <<"❌ ["<<col<<"]"<<"["<<row<<"]" <<"Size y :" << y_size << " Size x: " << x_size << std::endl;
             y_size = y_size * 2;
             x_size = x_size / 2;
         }
@@ -194,24 +196,27 @@ bool Kargnauth_Map::find_aceptable_group (int col, int row)
 }
 
 
-std::string Kargnauth_Map::kmap_to_formula_2()
+std::string Kargnauth_Map::kmap_agrupations()
 {
     size_t size_rows = this->kmap.size();
     size_t size_cols = this->kmap[0].size();
-    this->kmap_unchecked = this->kmap;   
+    this->kmap_unchecked = this->kmap;
 
-    // std::cout << "Tamaño:" << this->kmap_unchecked.size() << " & " << this->kmap_unchecked[0].size() << std::endl;
+    // std::cout << "Mapa Real    Tamaño:" << this->kmap_unchecked.size() << " & " << this->kmap_unchecked[0].size() << std::endl;
+    // std::cout << "Mapa Uncheck Tamaño:" << this->kmap.size() << " & " << this->kmap[0].size() << std::endl;
 
     for (size_t i = 0; i < size_rows; i++)
     {
         for (size_t j = 0; j < size_cols; j++)
         {
+            // std::cout << "Moves to : " << i<< ":" << j << " -> " << this->kmap[i][j] << this->kmap_unchecked[i][j]<< std::endl;
             if ( this->kmap[i][j] == true && this->kmap_unchecked[i][j] == true) //CHECK IF that hold is not being checked
+            {
                 find_aceptable_group(i,j);
+            }    
         }
     }
-    this->elavorate_formula();
-    return "";
+    return this->elavorate_formula();
 }
   
 
@@ -257,71 +262,77 @@ std::vector<int> Kargnauth_Map::detectChanges(const std::vector<std::vector<int>
         if (same) 
             result[var] = firstBit;
         else      
-            result[var] = 2; // don't care
+            result[var] = 2; // don't care anymore of this bs
     }
 
     return result;
 }
 
 
-void Kargnauth_Map::elavorate_formula()
+void Kargnauth_Map::appendVarsRPN( const std::vector<int>& changes, const std::vector<std::string>& vars, std::string& out, int& varsCount)
+{
+    for (size_t i = 0; i < changes.size(); i++) {
+
+        if (DEBUG) {
+            if (changes[i] == 0)
+                std::cout << "Var " << vars[i] << " = 0" << std::endl;
+            else if (changes[i] == 1)
+                std::cout << "Var " << vars[i] << " = 1" << std::endl;
+            else
+                std::cout << "Var " << vars[i] << " = don't care" << std::endl;
+        }
+
+        if (changes[i] == 2)
+            continue;
+
+        out += vars[i] + " ";
+        varsCount++;
+
+        if (changes[i] == 0)
+            out += "! ";
+    }
+}
+
+std::string Kargnauth_Map::elavorate_formula()
 {
     std::vector<std::vector<int>> aux_left, aux_right;
     std::vector<int> result;
-    std::string formula = " ";
-    std::string aux;
+    std::string formula, aux;
+    int varsCount;
+    std::vector<std::string> terms;
 
     aux_left  = generateGrayCode(kmap_rows_vars.size());
     aux_right = generateGrayCode(kmap_cols_vars.size());
 
     for (size_t x = 0; x < validated_areas.size(); x++) {
-        
-        if (x != 0)
-            formula += " + ";
+
         aux = "";
+        varsCount = 0;
+
         if (DEBUG)
             this->validated_areas[x].visualize();
-        result = detectChanges(aux_left,this->validated_areas[x].columns);
-        for (size_t i = 0; i < result.size(); i++) {
-            if (DEBUG)
-            {
-                if (result[i] == 0) 
-                    std::cout << "Var " << kmap_rows_vars[i] << " = 0" << std::endl;
-                else if (result[i] == 1) 
-                    std::cout << "Var " << kmap_rows_vars[i] << " = 1" << std::endl;
-                else 
-                    std::cout << "Var " << kmap_rows_vars[i] << " = don't care" << std::endl;
-            }
 
-            if (result[i] == 2) 
-                continue;
-            aux += kmap_rows_vars[i];
-            if (result[i] == 0) 
-                aux += " ! " ;
-        }
-        result = detectChanges(aux_right,this->validated_areas[x].rows);
-        for (size_t i = 0; i < result.size(); i++) {
-            if (DEBUG)
-            {
-                if (result[i] == 0) 
-                    std::cout << "Var " << kmap_cols_vars[i] << " = 0" << std::endl;
-                else if (result[i] == 1) 
-                    std::cout << "Var " << kmap_cols_vars[i] << " = 1" << std::endl;
-                else 
-                    std::cout << "Var " << kmap_cols_vars[i] << " = don't care" << std::endl;
-            }
+        result = this->detectChanges(aux_left, this->validated_areas[x].columns);
+        this->appendVarsRPN(result,kmap_rows_vars,aux,varsCount);
+        
+        result = this->detectChanges(aux_right, this->validated_areas[x].rows);
+        this->appendVarsRPN(result,kmap_cols_vars,aux,varsCount);
 
-            if (result[i] == 2) 
-                continue;
-            aux += kmap_cols_vars[i];
-            if (result[i] == 0) 
-                aux += " ! " ;
-        }
+        for (int i = 0; i < varsCount - 1; i++)
+            aux += "& ";
 
-        formula += aux;
+        terms.push_back(aux);
     }
 
-    std::cout << " Formula Original :  "<< tree.printInOrderMath() << std::endl;
-    std::cout << " Formula Simple :  "<< formula << std::endl;
-        
+    
+    for (size_t i = 0; i < terms.size(); i++) {
+        formula += terms[i];
+        if (i > 0)
+            formula += "| ";
+    }
+
+    // std::cout << "Formula Original : " << tree.printInOrderMath() << std::endl;
+    // std::cout << "Formula Simple   : " << formula_rpn << std::endl;
+    return formula;
 }
+

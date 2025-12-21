@@ -33,11 +33,6 @@ Node &Node::operator=(const Node& other)
     return (*this);
 }
 
-
-
-
-
-
 ExpressionTree::ExpressionTree() : root(nullptr) {}
 ExpressionTree::~ExpressionTree() { 
     // std::cout << "Bye bye tree"<< std::endl;
@@ -104,8 +99,8 @@ bool ExpressionTree::isVariable(const std::string& expr) const
     return expr.size() == 1 && std::isalpha(static_cast<unsigned char>(expr[0]));
 }
 
-void ExpressionTree::build(const std::string& expr) {
-    // std::cout << "WOLOLO Tenemos la frase " << expr << std::endl;
+void ExpressionTree::build(const std::string& expr) 
+{
 
     this->clear(root);
     this->root = nullptr;
@@ -330,14 +325,9 @@ void ExpressionTree::build_Simplified(const std::string& expr) {
             op->right = aux_r;
             
             
-        op = simplify_formula(op);
-            
-
-
+            op = simplify_formula(op);
             // (A ⇔ B) ⇔ ((A ⇒ B) ∧ (B ⇒ A))
             // (A ⇔ B) ⇔ ((¬A ∨ B) ∧ (¬B ∨ A))
-
-
             stack.push(op);
         }
 
@@ -463,6 +453,47 @@ void ExpressionTree::clear(Node *node)
     return;
 }
 
+
+Node* ExpressionTree::normalizeRight(Node* node)
+{
+    if (!node) return nullptr;
+
+    node->left  = normalizeRight(node->left);
+    node->right = normalizeRight(node->right);
+
+    if (!isOperator(node->value))
+        return node;
+
+    if (node->value != "|" && node->value != "&")
+        return node;
+
+    while (node->left &&
+           isOperator(node->left->value) &&
+           node->left->value == node->value &&
+           !node->left->negated)
+    {
+        Node* X = node->left->left;
+        Node* Y = node->left->right;
+        Node* Z = node->right;
+
+        Node* newRight = new Node(node->value);
+        newRight->left  = Y;
+        newRight->right = Z;
+
+        node->left  = X;
+        node->right = newRight;
+    }
+
+    node->right = normalizeRight(node->right);
+
+    return node;
+}
+
+void ExpressionTree::normalize_to_the_Right(void)
+{
+    this->normalizeRight(this->root);
+}
+
 std::string ExpressionTree::printInOrder(void) const
 {
     std::string result = "";
@@ -490,9 +521,9 @@ std::string ExpressionTree::postorder(Node* node) const {
     if (!node) return str;
     str += this->postorder(node->left);
     str += this->postorder(node->right);
-    str += node->value;
+    str += " " + node->value;
     if (node->negated)
-        str += "!"; 
+        str += " !"; 
     return str;
 }
 

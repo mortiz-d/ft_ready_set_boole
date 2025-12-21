@@ -36,6 +36,8 @@ struct Node {
 };
 
 
+
+
 class ExpressionTree {
     private:
         Node* root;
@@ -49,6 +51,7 @@ class ExpressionTree {
         bool isVariable(const std::string& expr) const;
 
         Node* simplify_formula (Node* node);
+        Node* normalizeRight(Node* node);
         std::string inorder(Node* node) const;
         std::string translateValue(const std::string& expr) const;
         std::string inorderMath(Node* node) const;
@@ -62,6 +65,7 @@ class ExpressionTree {
         void build_Simplified(const std::string& expr);
         void build(const std::string& expr);
         double calculate(std::map<std::string, bool> _input_var) const;
+        void normalize_to_the_Right(void);
 
         std::string printInOrderMath(void) const;
         std::string printInOrder(void) const;
@@ -113,14 +117,15 @@ class Kargnauth_Map {
         bool find_aceptable_group(int col, int row);
         bool check_sector(int y ,int x, int y_end, int x_end, int mode);
         std::vector<int> detectChanges(const std::vector<std::vector<int>> gray, std::set<int> columns);
-        void elavorate_formula();
+        std::string elavorate_formula(void);
+        void appendVarsRPN( const std::vector<int>& changes, const std::vector<std::string>& vars, std::string& out, int& varsCount); //extension of elavorate formula :v
     public:
         Kargnauth_Map(void);
         ~Kargnauth_Map(void);
 
-        void generate_kmap(const std::string& expr);
+        bool generate_kmap(const std::string& expr);
         void print_kmap(void) const;
-        std::string kmap_to_formula_2();
+        std::string kmap_agrupations();
 };
 
 std::set<std::string> obtainVariables(const std::string& expr);
