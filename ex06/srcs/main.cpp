@@ -23,30 +23,7 @@ std::string conjunctive_normal_form(const std::string& expr)
     
 }
 
-void check_formula(const std::string& expr)
-{
-    ExpressionTree tree;
-    TruthTable table;
-    Kargnauth_Map map;
 
-    try
-    {   
-        std::cout << "FORMULA '" << expr << "'" <<std::endl;
-        tree.build_Simplified(expr);
-        tree.normalize_to_the_Right();
-        table.generate_table(expr);
-        table.display_table();
-
-        if (map.generate_kmap(expr))
-            map.print_kmap(); 
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << e.what() << std::endl;
-    }
-    
-    return;
-}
 
 void test (std::string str)
 {

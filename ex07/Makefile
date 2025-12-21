@@ -16,7 +16,7 @@ SRC_PATH    = srcs
 OBJ_PATH    = objects
 
 # SOURCES #
-SRC =  main.cpp Abstract_Syntax_Tree.cpp Truth_Table.cpp #expresion_tree.cpp
+SRC =  main.cpp Abstract_Syntax_Tree.cpp Truth_Table.cpp Cube.cpp Kargnauth_Map.cpp aux.cpp #expresion_tree.cpp
 
 # RULES #
 all: $(NAME)
