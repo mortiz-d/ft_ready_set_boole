@@ -5,50 +5,54 @@ PURPLE = @echo "\033[0;35m"
 CYAN = @echo "\033[0;36m"
 RESET = "\033[1;0m"
 
+
 # VARIABLES #
 NAME = boole
 CC = clang++
-INCLUDE = -I./include
-CFLAGS = -std=c++11 -Wall -Werror -Wextra 
+CFLAGS = -std=c++11 -Wall -Wextra -Werror
+INCLUDE = -I../files/include
 
-# PATHs #
-SRC_PATH    = srcs
-OBJ_PATH    = objects
+# PATHS #
+SRC_PATH   = srcs
+FILES_PATH = ../files/srcs
+OBJ_PATH   = ../objects
 
 # SOURCES #
-SRC =  main.cpp Abstract_Syntax_Tree.cpp #expresion_tree.cpp
+SRC = main.cpp 
+FILE = aux.cpp Abstract_Syntax_Tree.cpp
+
+SRCS  = $(addprefix $(SRC_PATH)/, $(SRC))
+FILES = $(addprefix $(FILES_PATH)/, $(FILE))
+
+ALL_SRCS = $(SRCS) $(FILES)
+
+# OBJECTS #
+OBJS = $(addprefix $(OBJ_PATH)/, $(notdir $(ALL_SRCS:.cpp=.o)))
 
 # RULES #
 all: $(NAME)
 
-OBJ_NAME = $(SRC:%.cpp=%.o)
-
-SRCS = $(addprefix $(SRC_PATH)/, $(SRC))
-
-OBJS =  $(addprefix $(OBJ_PATH)/, $(OBJ_NAME))
-
 $(OBJ_PATH):
-	@mkdir -p $(OBJ_PATH) 2> /dev/null
+	@mkdir -p $(OBJ_PATH)
 
 $(OBJ_PATH)/%.o: $(SRC_PATH)/%.cpp | $(OBJ_PATH)
 	@$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
-            
-$(NAME): $(OBJS) 
-	@$(CC) $(CFLAGS) $(INCLUDE) $(OBJS) -o $(NAME)
-	$(GREEN)PROGRAM $(NAME) ASSEMBLED $(RESET)
 
-##RULES
-$(MAKE): make
+$(OBJ_PATH)/%.o: $(FILES_PATH)/%.cpp | $(OBJ_PATH)
+	@$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
+
+$(NAME): $(OBJS)
+	@$(CC) $(CFLAGS) $(OBJS) -o $(NAME)
+	$(GREEN)PROGRAM $(NAME) ASSEMBLED $(RESET)
 
 clean:
 	@rm -rf $(OBJ_PATH)
-	@$(PURPLE)CLEANED $(NAME) OBJECTS $(RESET)
-	
+	$(PURPLE)CLEANED OBJECTS$(RESET)
+
 fclean: clean
-	@rm -rf $(NAME)
-	@rm -rf $(cd)
-	$(PURPLE)CLEANED DIRECTORY AND EXEC $(RESET)
+	@rm -f $(NAME)
+	$(PURPLE)CLEANED EXECUTABLE$(RESET)
 
 re: fclean all
 
-PHONY.: all clean fclean re norminette test
+.PHONY: all clean fclean re

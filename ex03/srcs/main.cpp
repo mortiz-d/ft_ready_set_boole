@@ -5,10 +5,11 @@
 void test(const std::string& expr)
 {
     ExpressionTree tree;
+    std::map<std::string, bool> _input_var;
 
     tree.build(expr);
 
-    std::cout << tree.printInOrderMath() << " = " << tree.calculate() << std::endl;
+    std::cout << tree.printInOrderMath() << " = " << tree.calculate(_input_var) << std::endl;
 
 }
 
