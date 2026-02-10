@@ -57,15 +57,15 @@ string see_binary(int value)
     return str;
 }
 
-set<std::string> obtainVariables(const std::string& expr)
+set<string> obtainVariables(const string& expr)
 {
-    std::istringstream iss(expr);
-    std::string token;
-    std::set<std::string> _var;
+    istringstream iss(expr);
+    string token;
+    set<string> _var;
 
     while (iss >> token)
     {
-        if (token.size() == 1 && std::isalpha(static_cast<unsigned char>(token[0])))
+        if (token.size() == 1 && isalpha(static_cast<unsigned char>(token[0])))
             _var.insert(token);
     }
     return _var;

@@ -8,7 +8,7 @@ RESET = "\033[1;0m"
 
 # VARIABLES #
 NAME = boole
-CC = clang++
+CC = g++
 CFLAGS = -std=c++11 -Wall -Wextra -Werror
 INCLUDE = -I../files/include
 

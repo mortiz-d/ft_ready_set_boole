@@ -8,7 +8,7 @@ RESET = "\033[1;0m"
 
 # VARIABLES #
 NAME = boole
-CC = clang++
+CC = g++
 CFLAGS = -std=c++11 -Wall -Wextra -Werror
 INCLUDE = -I../files/include
 
@@ -19,7 +19,7 @@ OBJ_PATH   = ../objects
 
 # SOURCES #
 SRC = main.cpp 
-FILE = aux.cpp Abstract_Syntax_Tree.cpp
+FILE = aux.cpp boole.cpp Node.cpp ExpressionTree.cpp
 
 SRCS  = $(addprefix $(SRC_PATH)/, $(SRC))
 FILES = $(addprefix $(FILES_PATH)/, $(FILE))

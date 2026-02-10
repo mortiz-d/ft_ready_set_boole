@@ -1,15 +1,19 @@
-#include "boole.hpp"
-// #include "expression_tree.cpp"
+#include "../../files/include/boole.hpp"
 
-
-void test(const std::string& expr)
+void test(string expr)
 {
     ExpressionTree tree;
-    std::map<std::string, bool> _input_var;
+    bool res;
 
-    tree.build(expr);
+    res = eval_formula(expr);
+    if (res)
+    {
+        tree.build(expr);
+        cout << expr << " ==> " << tree.printInOrderMath() << " ==> "<< res << endl;
+    }    
+    else
+        cout << expr << " ==> "<< res << endl;
 
-    std::cout << tree.printInOrderMath() << " = " << tree.calculate(_input_var) << std::endl;
 
 }
 

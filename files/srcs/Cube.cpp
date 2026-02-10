@@ -1,4 +1,4 @@
-#include "boole.hpp"
+#include "base.hpp"
 
 Cube::Cube()
 {
@@ -13,24 +13,24 @@ Cube::~Cube()
 
 void Cube::visualize()
 {
-    std::cout << "Cube {" << std::endl;
-    std::cout <<  "  type: "<< this->columns.size() << " x "<< this->rows.size() << std::endl;
+    cout << "Cube {" << endl;
+    cout <<  "  type: "<< this->columns.size() << " x "<< this->rows.size() << endl;
     
-    std::cout <<  "  col : { ";
+    cout <<  "  col : { ";
     for (int col :  this->columns)
     {
-        std::cout << col << " ";
+        cout << col << " ";
     }
-    std::cout << "  }" << std::endl;
+    cout << "  }" << endl;
     
-    std::cout <<  "  rows: { ";
+    cout <<  "  rows: { ";
     for (int r : this->rows)
     {
-        std::cout << r << " ";
+        cout << r << " ";
     }
-    std::cout << "  }" << std::endl;
+    cout << "  }" << endl;
 
-    std::cout << "}" << std::endl;
+    cout << "}" << endl;
 
     return;
 }

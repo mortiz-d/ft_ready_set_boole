@@ -4,15 +4,16 @@ TruthTable::TruthTable() : _n_rows(0)
 {
     return;
 }
+
 TruthTable::~TruthTable() 
 { 
     return;
 }
 
-std::vector<std::vector<int>> generateGrayCode_Truth_Table(int amount_variables) {
+vector<vector<int>> generateGrayCode_Truth_Table(int amount_variables) {
     int mask ,code ;
     int size = 1 << amount_variables;  // 2^n
-    std::vector<std::vector<int>> gray(size , std::vector<int>(amount_variables));
+    vector<vector<int>> gray(size , vector<int>(amount_variables));
 
     for (int i = 0; i < size; i++) {
         code = grey_map(i);
@@ -28,11 +29,10 @@ std::vector<std::vector<int>> generateGrayCode_Truth_Table(int amount_variables)
     return gray;
 }
 
-
-void TruthTable::generate_table(const std::string& expr)
+void TruthTable::generate_table(const string str)
 {
-    std::set<std::string> vars = obtainVariables(expr);
-    std::map<std::string, bool> input;
+    set<string> vars = obtainVariables(str);
+    map<string, bool> input;
     int n = vars.size();
     int rows = 1 << n;
     
@@ -42,15 +42,15 @@ void TruthTable::generate_table(const std::string& expr)
 
     if (n == 0)
     {
-        std::cout << "No variables to create Truth Table" << std::endl;
+        cout << "No variables to create Truth Table" << endl;
         return;
     }
 
     //Creating the input so each row on the truth table has an input
-    for (std::string v : vars)
+    for (string v : vars)
         this->_colum_order.push_back(v);
 
-    tree.build_Simplified(expr);
+    tree.build_Simplified(str);
     this->_table = generateGrayCode_Truth_Table(n);
 
     //Here se set the table
@@ -68,22 +68,22 @@ void TruthTable::display_table(void) const
     if (this->_table.empty())
         return;
 
-    std::cout << std::endl <<"Truth Table|" << std::endl;
+    cout << endl <<"Truth Table|" << endl;
 
-    for (std::string col : this->_colum_order)
-        std::cout << " " << col << " |";
+    for (string col : this->_colum_order)
+        cout << " " << col << " |";
 
-    std::cout << std::endl << "|";
+    cout << endl << "|";
     for (size_t i = 0; i < this->_colum_order.size(); i++)
-        std::cout << "---|";
-    std::cout << std::endl;
+        cout << "---|";
+    cout << endl;
 
-    for (std::vector<int> row : this->_table)
+    for (vector<int> row : this->_table)
     {
-        std::cout << "|";
+        cout << "|";
         for (int value : row)
-            std::cout << " " << value << " |";
-        std::cout << std::endl;
+            cout << " " << value << " |";
+        cout << endl;
     }
 }
 
@@ -94,7 +94,7 @@ int TruthTable::get_nbr_posibilities(void) const
     size_t posibilities = 0; 
     int result_score = this->_colum_order.size();
 
-    for (std::vector<int> row : this->_table)
+    for (vector<int> row : this->_table)
     {
         if ( row[result_score] )
             posibilities++;

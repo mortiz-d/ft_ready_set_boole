@@ -1,29 +1,6 @@
-#include "boole.hpp"
+#include "../../files/include/base.hpp"
 
-std::string conjunctive_normal_form(const std::string& expr)
-{
-    ExpressionTree  tree_result;
-    Kargnauth_Map map;
-    std::string result = " ";
-    try 
-    {
-        if (map.generate_kmap(expr))
-            result = map.kmap_agrupations();
-
-        tree_result.build_Simplified(expr);
-        tree_result.normalize_to_the_Right();
-        result = tree_result.printPostOrder();
-    }
-    catch (const std::exception& e)
-    {
-        std::cout << "Error: " << e.what() << std::endl;
-    }
-
-    return result;
-    
-}
-
-void check_formula(const std::string& expr)
+void check_formula(const string str)
 {
     ExpressionTree tree;
     TruthTable table;
@@ -31,32 +8,31 @@ void check_formula(const std::string& expr)
 
     try
     {   
-        std::cout << "FORMULA '" << expr << "'" <<std::endl;
-        tree.build_Simplified(expr);
+        cout << "FORMULA '" << str << "'" <<endl;
+        tree.build_Simplified(str);
         tree.normalize_to_the_Right();
-        table.generate_table(expr);
+        table.generate_table(str);
         table.display_table();
 
-        if (map.generate_kmap(expr))
+        if (map.generate_kmap(str))
             map.print_kmap(); 
     }
-    catch(const std::exception& e)
+    catch(const exception& e)
     {
-        std::cerr << e.what() << std::endl;
+        cout << e.what() << endl;
     }
     
-
     return;
 }
 
-void test (std::string str)
+void test (string str)
 {
-    std::string aux;
+    string aux;
 
     aux = conjunctive_normal_form(str);
 
-    std::cout << str << std::endl;
-    std::cout << aux << std::endl;
+    cout << str << endl;
+    cout << aux << endl;
     check_formula(str);
     check_formula(aux);
 
@@ -72,8 +48,6 @@ int main() {
 
     test("A"); //GRITA ERROR
 
-    // test("A B C & |");
-//     std::cout << "-------------" << std::endl;
 
     // test("A B C & | D |");
     // test("A B C D | | &");

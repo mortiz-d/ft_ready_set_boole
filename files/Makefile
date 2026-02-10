@@ -7,7 +7,7 @@ RESET = "\033[1;0m"
 
 # VARIABLES #
 NAME = matrix
-CC = clang++
+CC = g++
 INCLUDE = -I./include
 CFLAGS = -std=c++11 -Wall -Werror -Wextra 
 

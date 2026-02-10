@@ -1,65 +1,19 @@
 #include "boole.hpp"
 
-
-Node::Node(): negated(false), value("None"), left(nullptr), right(nullptr) 
-{
-    return;
-}
-
-Node::Node(std::string val) : negated(false), value(std::move(val)), left(nullptr), right(nullptr) 
-{
-    return;
-}
-
-Node::Node(const Node & node)
-{
-    // std::cout  << "Constructor de copia" << std::endl;
-    *this = node;
-}
-
-Node::~Node()
-{
-    // std::cout  << "destruido" << std::endl;
-    return;
-}
-
-Node &Node::operator=(const Node& other)
-{
-    // std::cout  << "Operador =" << std::endl;
-    this->value = other.value;
-    this->left = other.left ? new Node(*other.left) : nullptr;
-    this->right = other.right ? new Node(*other.right) : nullptr;
-    this->negated = other.negated;
-    return (*this);
-}
-
 ExpressionTree::ExpressionTree() : root(nullptr) {}
-ExpressionTree::~ExpressionTree() { 
-    // std::cout << "Bye bye tree"<< std::endl;
+
+ExpressionTree::~ExpressionTree() {
     this->clear(root);
 }
 
-//∧ & Conjuncion
-//∨ | Disjuncion
-//⊕ ˆ Exclusice Disjuncion 
-//⇒ > Material condition
-//⇔ = Logical equivalence
-bool ExpressionTree::isOperator(const std::string& expr) const
+bool ExpressionTree::isOperator(const string expr) const
 {
     if (expr == "&" || expr == "|"|| expr == "^" || expr == ">"|| expr == "=" || expr == "!")
         return true;
     return false;
 }
 
-//⊥   
-//⊤
-//¬
-//∧ 
-//∨ 
-//⊕ 
-//⇒ 
-//⇔
-std::string ExpressionTree::translateValue(const std::string& expr) const
+string ExpressionTree::translateValue(const string expr) const
 {
     if (expr == "&")
         return "∧";
@@ -80,48 +34,48 @@ std::string ExpressionTree::translateValue(const std::string& expr) const
     return "Error";
 }
 
-bool ExpressionTree::isNegation(const std::string& expr) const
+bool ExpressionTree::isNegation(const string expr) const
 {
     if (expr == "!")
         return true;
     return false;
 }
 
-bool ExpressionTree::isBoolean(const std::string& expr) const
+bool ExpressionTree::isBoolean(const string expr) const
 {
     if (expr == "1" || expr == "0")
         return true;
     return false;
 }
 
-bool ExpressionTree::isVariable(const std::string& expr) const
+bool ExpressionTree::isVariable(const string expr) const
 {
-    return expr.size() == 1 && std::isalpha(static_cast<unsigned char>(expr[0]));
+    return expr.size() == 1 && isalpha(static_cast<unsigned char>(expr[0]));
 }
 
-void ExpressionTree::build(const std::string& expr) 
+void ExpressionTree::build(const string expr) 
 {
 
     this->clear(root);
     this->root = nullptr;
-    std::stack<Node*> stack;
+    stack<Node*> stack;
     Node* aux_r;
     Node* aux_l;
     Node* op;
 
-    std::istringstream iss(expr);
-    std::string token;
+    istringstream iss(expr);
+    string token;
 
     while (iss >> token) {
-        // std::cout << token << std::endl;
+        // cout << token << endl;
         if (!isOperator(token)) {
-            // std::cout << "Añadimos a la lista " << token << std::endl;
+            // cout << "Añadimos a la lista " << token << endl;
             stack.push(new Node(token)); // operando
         } 
         else if (isNegation(token)){
-            // std::cout << "Añadimos una negacion al operador anterior " << token << std::endl;
+            // cout << "Añadimos una negacion al operador anterior " << token << endl;
             if (stack.size() < 1)
-                throw std::runtime_error("Negacion inválida");
+                throw runtime_error("Negacion inválida");
             aux_r = stack.top(); 
             stack.pop();
 
@@ -129,9 +83,9 @@ void ExpressionTree::build(const std::string& expr)
             stack.push(aux_r);
         }
          else {
-            // std::cout << "Añadimos un nodo a la operacion " << token << std::endl;
+            // cout << "Añadimos un nodo a la operacion " << token << endl;
             if (stack.size() < 2)
-                throw std::runtime_error("Expresión postfija inválida");
+                throw runtime_error("Expresión postfija inválida");
             aux_r = stack.top(); 
             stack.pop();
             aux_l = stack.top(); 
@@ -145,7 +99,7 @@ void ExpressionTree::build(const std::string& expr)
     }
 
     if (stack.size() != 1)
-        throw std::runtime_error("Expresión postfija inválida (sobran operandos)");
+        throw runtime_error("Expresión postfija inválida (sobran operandos)");
 
     this->root = stack.top();
 }
@@ -156,9 +110,9 @@ Node* ExpressionTree::simplify_formula (Node* node)
     Node* aux_r;//, *aux_r_2;
     Node* aux_l;//, *aux_l_2;
     Node* op ,*aux_op, *aux_node;
-    std::string aux_val;
+    string aux_val;
     (void) aux_node;
-    // std::cout  << "Simplify formula (complex version)" << this->inorder(node)  << std::endl;
+    // cout  << "Simplify formula (complex version)" << this->inorder(node)  << endl;
 
     (void) op;
     (void) aux_r;
@@ -285,17 +239,17 @@ Node* ExpressionTree::simplify_formula (Node* node)
 }
 
 
-void ExpressionTree::build_Simplified(const std::string& expr) {
+void ExpressionTree::build_Simplified(const string expr) {
 
     this->clear(root);
     this->root = nullptr;
-    std::stack<Node*> stack;
+    stack<Node*> stack;
     Node* aux_r;//, *aux_r_2;
     Node* aux_l;//, *aux_l_2;
     Node* op ;//, *aux_op;
 
-    std::istringstream iss(expr);
-    std::string token;
+    istringstream iss(expr);
+    string token;
 
     while (iss >> token) {
         if (!isOperator(token)) {
@@ -303,7 +257,7 @@ void ExpressionTree::build_Simplified(const std::string& expr) {
         } 
         else if (isNegation(token)){
             if (stack.size() < 1)
-                throw std::runtime_error("Negacion inválida");
+                throw runtime_error("Negacion inválida");
             aux_r = stack.top(); 
             stack.pop();
 
@@ -314,7 +268,7 @@ void ExpressionTree::build_Simplified(const std::string& expr) {
         }
         else {
             if (stack.size() < 2)
-                throw std::runtime_error("Expresión postfija inválida");
+                throw runtime_error("Expresión postfija inválida");
             aux_r = stack.top(); 
             stack.pop();
             aux_l = stack.top(); 
@@ -334,25 +288,19 @@ void ExpressionTree::build_Simplified(const std::string& expr) {
     }
 
     if (stack.size() == 0)
-        throw std::runtime_error("Esta vacio");
+        throw runtime_error("Esta vacio");
     else if (stack.size() != 1)
-        throw std::runtime_error("Expresión postfija inválida (sobran operandos)");
+        throw runtime_error("Expresión postfija inválida (sobran operandos)");
 
     this->root = stack.top();
 }
 
-double ExpressionTree::calculate(std::map<std::string, bool> _input_var) const
+double ExpressionTree::calculate(map<string, bool> _input_var) const
 {
     return this->evaluate(this->root, _input_var);
 }
 
-//¬
-//∧ 
-//∨ 
-//⊕ 
-//⇒ 
-//⇔
-double ExpressionTree::evaluate(Node* node, std::map<std::string, bool> _input_var) const {
+double ExpressionTree::evaluate(Node* node, map<string, bool> _input_var) const {
     bool val_l;
     bool val_r;
     bool res;
@@ -365,41 +313,41 @@ double ExpressionTree::evaluate(Node* node, std::map<std::string, bool> _input_v
     }
     else if (this->isBoolean(node->value))
     {
-        res = std::stod(node->value);
+        res = stod(node->value);
     }
     else
     {
         val_l = this->evaluate(node->left,_input_var);
         val_r = this->evaluate(node->right,_input_var);
 
-        // std::cout << "Calculamos con " << node->value << std::endl;
-        if (node->value == std::string("&")) //∧ 
+        // cout << "Calculamos con " << node->value << endl;
+        if (node->value == string("&")) //∧ 
         {
-            // std::cout << val_l << " & "<< val_r << " = " << (val_l & val_r) << std::endl;
+            // cout << val_l << " & "<< val_r << " = " << (val_l & val_r) << endl;
             res = (val_l & val_r);
         }
-        else if (node->value == std::string("|")) //∨ 
+        else if (node->value == string("|")) //∨ 
         {
-            // std::cout << val_l << " | "<< val_r << " = " << (val_l | val_r) << std::endl;
+            // cout << val_l << " | "<< val_r << " = " << (val_l | val_r) << endl;
             res = (val_l | val_r);
         }
-        else if (node->value == std::string("^")) //⊕
+        else if (node->value == string("^")) //⊕
         {
-            // std::cout << val_l << " == "<< val_r << " = " << (val_l == val_r) << std::endl;
+            // cout << val_l << " == "<< val_r << " = " << (val_l == val_r) << endl;
             res = (val_l ^ val_r);
         }
-        else if (node->value == std::string(">")) //⇒ 
+        else if (node->value == string(">")) //⇒ 
         {
-            // std::cout << !val_l << " > "<< val_r << " = " << (!val_l | val_r) << std::endl;
+            // cout << !val_l << " > "<< val_r << " = " << (!val_l | val_r) << endl;
             res = !val_l | val_r;
         }
-        else if (node->value == std::string("=")) //⇔
+        else if (node->value == string("=")) //⇔
         {
-            // std::cout << val_l << " == "<< val_r << " = " << (val_l == val_r) << std::endl;
+            // cout << val_l << " == "<< val_r << " = " << (val_l == val_r) << endl;
             res = (val_l == val_r);
         }
         else
-            throw std::runtime_error("Operador desconocido: " + node->value);
+            throw runtime_error("Operador desconocido: " + node->value);
     }
 
     if (node->negated)
@@ -409,8 +357,8 @@ double ExpressionTree::evaluate(Node* node, std::map<std::string, bool> _input_v
     
 }
 
-std::string ExpressionTree::inorder(Node* node) const {
-    std::string res = "";
+string ExpressionTree::inorder(Node* node) const {
+    string res = "";
     if (!node) 
         return res;
     if (node->negated) //Tal vez?
@@ -425,8 +373,8 @@ std::string ExpressionTree::inorder(Node* node) const {
     return res;
 }
 
-std::string ExpressionTree::inorderMath(Node* node) const {
-    std::string res = "";
+string ExpressionTree::inorderMath(Node* node) const {
+    string res = "";
     if (!node) 
         return res;
     if (node->negated)
@@ -449,7 +397,7 @@ void ExpressionTree::clear(Node *node)
     clear(node->left);
     clear(node->right);
     delete node;
-    // std::cout << "Limpiamos un node" << std::endl;
+    // cout << "Limpiamos un node" << endl;
     return;
 }
 
@@ -494,29 +442,29 @@ void ExpressionTree::normalize_to_the_Right(void)
     this->normalizeRight(this->root);
 }
 
-std::string ExpressionTree::printInOrder(void) const
+string ExpressionTree::printInOrder(void) const
 {
-    std::string result = "";
+    string result = "";
     result += this->inorder(this->root);
     return result;
 }
 
-std::string ExpressionTree::printInOrderMath(void) const
+string ExpressionTree::printInOrderMath(void) const
 {
-    std::string result = "";
+    string result = "";
     result += this->inorderMath(this->root);
     return result;
 }
 
 void ExpressionTree::preorder(Node* node) const {
     if (!node) return;
-    std::cout << node->value << " ";
+    cout << node->value << " ";
     this->preorder(node->left);
     this->preorder(node->right);
 }
 
-std::string ExpressionTree::postorder(Node* node) const {
-    std::string str = "";
+string ExpressionTree::postorder(Node* node) const {
+    string str = "";
 
     if (!node) return str;
     str += this->postorder(node->left);
@@ -531,10 +479,10 @@ std::string ExpressionTree::postorder(Node* node) const {
 void ExpressionTree::printPreOrder(void) const
 {
     this->preorder(this->root);
-    std::cout << std::endl;
+    cout << endl;
 }
 
-std::string ExpressionTree::printPostOrder(void) const
+string ExpressionTree::printPostOrder(void) const
 {
     return this->postorder(this->root);
 }

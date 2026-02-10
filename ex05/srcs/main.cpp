@@ -1,63 +1,30 @@
-#include "boole.hpp"
-// #include "expression_tree.cpp"
+#include "../../files/include/boole.hpp"
 
-
-std::string negation_normal_form(const std::string& expr)
+int test (string value)
 {
-    ExpressionTree tree;
-
-    tree.build_Simplified(expr);
-    // std::cout << tree.printInOrderMath() << std::endl;
-    return tree.printPostOrder();
-}
-
-std::string math_simplified_formula(const std::string& expr)
-{
-    ExpressionTree tree;
-
-    tree.build_Simplified(expr);
-    // std::cout << tree.printInOrderMath() << std::endl;
-    return tree.printInOrderMath();
-}
-
-std::string math_complex_formula(const std::string& expr)
-{
-    ExpressionTree tree;
-
-    tree.build(expr);
-    // std::cout << tree.printInOrderMath() << std::endl;
-    return tree.printInOrderMath();
-}
-
-
-int test (std::string value)
-{
-    std::string str = "";
-    std::string math_c = "";
-    std::string math_s = "";
+    string str = "";
+    string math_c = "";
+    string math_s = "";
     int res = 0;
 
     str = negation_normal_form(value);
     math_s = math_simplified_formula(value);
     math_c = math_complex_formula(value);
     //tirarse por la ventana? opcional :eyes:
-    std::cout
-    << std::left << std::setw(12) << value      // Columna 1
-    << std::setw(6)  << ":"                     // Columna 2
-    << std::setw(15) << str                     // Columna 3
-    << std::setw(35) << math_s                  // Columna 4
-    << std::setw(35) << math_c                  // Columna 5
-    << std::endl;
-
-    // std::cout << value << " : " << str << " " << math  << std::endl;
-
+    cout
+    << left << setw(12) << value           // Columna 1
+    << setw(6)  << ":"                     // Columna 2
+    << setw(15) << str                     // Columna 3
+    << setw(35) << math_s                  // Columna 4
+    << setw(35) << math_c                  // Columna 5
+    << endl;
 
     return res;
 }
 
 int main() {
 
-    std::cout << "INPUT         OUTPUT             SIMPLIFIED FORMULA           BASIC FORMULA      " << std::endl;
+    cout << "INPUT         OUTPUT             SIMPLIFIED FORMULA           BASIC FORMULA      " << endl;
     test("A B & !");
     
     test("A B | !");
@@ -66,7 +33,7 @@ int main() {
 
     test("A B >");
     
-    test("A B = "); //Discutir la forma de distribuir la ley de equivalencia
+    test("A B = ");
     
     test("A B | C & !");
     
@@ -77,17 +44,17 @@ int main() {
     // // A!B!&C!|
 
     //Ley de eliminacion de la doble negacion
-    // std::cout  << "Elimination of double negation law" << std::endl;
+    // cout  << "Elimination of double negation law" << endl;
     // negation_normal_form("A !");
     // negation_normal_form("A ! !");
     
 
     //Ley de Material condition
-    // std::cout  << "Material condition law" << std::endl;
+    // cout  << "Material condition law" << endl;
     // negation_normal_form("A B >");
 
     //Ley de Equivalence
-    // std::cout  << "Equivalence law" << std::endl;
+    // cout  << "Equivalence law" << endl;
     // negation_normal_form("A B =");
     // negation_normal_form("A B >");
     // negation_normal_form(" A B & A ! B ! & |");
@@ -95,14 +62,14 @@ int main() {
 
 
     //Ley de morgan
-    // std::cout  << "Morgan law" << std::endl;
+    // cout  << "Morgan law" << endl;
     // negation_normal_form("A B | !");
     // negation_normal_form("A B | !!");
     // negation_normal_form("A B & !");
     // negation_normal_form("A B & ! !");
 
     //Ley de distribucion
-    // std::cout  << "Distribution law" << std::endl;
+    // cout  << "Distribution law" << endl;
     // negation_normal_form("B C | A & ");
     // negation_normal_form("A B C | & ");
 

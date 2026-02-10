@@ -1,4 +1,4 @@
-#include "boole.hpp"
+#include "base.hpp"
 
 Kargnauth_Map::Kargnauth_Map()
 {
@@ -11,11 +11,11 @@ Kargnauth_Map::~Kargnauth_Map()
 }
 
 
-bool Kargnauth_Map::generate_kmap(const std::string& expr)
+bool Kargnauth_Map::generate_kmap(const string& expr)
 {
-    std::set<std::string> vars = obtainVariables(expr);
-    std::set<std::string>::iterator it;
-    std::map<std::string, bool> input;
+    set<string> vars = obtainVariables(expr);
+    set<string>::iterator it;
+    map<string, bool> input;
     int gray_r,gray_c, rows,cols;
 
     this->table.generate_table(expr);
@@ -24,7 +24,7 @@ bool Kargnauth_Map::generate_kmap(const std::string& expr)
     int n = vars.size();
     if (n < 2)
     {
-        std::cout << "Needs at least 2 or more variables to deploy a kargnauth map" << std::endl;
+        cout << "Needs at least 2 or more variables to deploy a kargnauth map" << endl;
         return false;
     }
 
@@ -42,7 +42,7 @@ bool Kargnauth_Map::generate_kmap(const std::string& expr)
     rows = 1 << this->kmap_rows_vars.size();
     cols = 1 << this->kmap_cols_vars.size();
 
-    this->kmap.assign(rows, std::vector<bool>(cols, false));
+    this->kmap.assign(rows, vector<bool>(cols, false));
     for (int i = 0; i < rows; i++)
     {
         gray_r = grey_map(i);
@@ -71,34 +71,34 @@ void Kargnauth_Map::print_kmap(void) const
     int rows = kmap.size();
     int cols = kmap[0].size();
 
-    std::cout << std::endl << "Kargnauth Map" << std::endl;
-    std::cout << "       ";
+    cout << endl << "Kargnauth Map" << endl;
+    cout << "       ";
     for (int i = 0; i < (int)this->kmap_cols_vars.size(); i++)
-        std::cout << this->kmap_cols_vars[i];
-    std::cout << std::endl;
-    std::cout << "       ";
+        cout << this->kmap_cols_vars[i];
+    cout << endl;
+    cout << "       ";
 
     for (int c = 0; c < cols; c++) {
         int gc = grey_map(c);
         for (int b = this->kmap_cols_vars.size() - 1; b >= 0; b--)
-            std::cout << ((gc >> b) & 1);
-        std::cout << " ";
+            cout << ((gc >> b) & 1);
+        cout << " ";
     }
-    std::cout << std::endl;
+    cout << endl;
 
     for (int r = 0; r < rows; r++) {
         for (int i = 0; i < (int)this->kmap_rows_vars.size(); i++)
-            std::cout << this->kmap_rows_vars[i];
+            cout << this->kmap_rows_vars[i];
 
         _grey_code = grey_map(r);
-        std::cout << " ";
+        cout << " ";
         for (int b = this->kmap_rows_vars.size() - 1; b >= 0; b--)
-            std::cout << ((_grey_code >> b) & 1);
-        std::cout << " | ";
+            cout << ((_grey_code >> b) & 1);
+        cout << " | ";
 
         for (int c = 0; c < cols; c++)
-            std::cout << this->kmap[r][c] << "   ";
-        std::cout << std::endl;
+            cout << this->kmap[r][c] << "   ";
+        cout << endl;
     }
 }
 
@@ -151,7 +151,7 @@ bool Kargnauth_Map::find_aceptable_group (int col, int row)
     int n_max_casillas = size_rows * size_cols;
     int x_size, y_size;
     int group_size = 2;
-    std::stack<int> group_sizes;
+    stack<int> group_sizes;
 
     for (int i = 1; i <= n_max_casillas; i= i * 2)
     group_sizes.push(i);
@@ -163,7 +163,7 @@ bool Kargnauth_Map::find_aceptable_group (int col, int row)
         group_size = group_sizes.top();
         group_sizes.pop();
         // if (col == 1 && row == 3)
-        // std::cout << "Agrupando de " << group_size << " en " << group_size << std::endl; 
+        // cout << "Agrupando de " << group_size << " en " << group_size << endl; 
         x_size = group_size;
         y_size = 1;
         while (y_size <= group_size)
@@ -171,22 +171,22 @@ bool Kargnauth_Map::find_aceptable_group (int col, int row)
 
             if (y_size > (int) this->kmap.size() || x_size > (int)this->kmap[0].size())
             {
-                // std::cout << "La prueba de y:"<< y_size<< " x: "<<x_size<< " no sepuede realizar por que exigimos demasiado tamaño limit y:"<< this->kmap.size() << " limit x: "<< this->kmap[0].size()  << std::endl;
+                // cout << "La prueba de y:"<< y_size<< " x: "<<x_size<< " no sepuede realizar por que exigimos demasiado tamaño limit y:"<< this->kmap.size() << " limit x: "<< this->kmap[0].size()  << endl;
                 y_size = y_size * 2;
                 x_size = x_size / 2;
                 continue;
             }
             
-            // std::cout <<"? ["<<col<<"]"<<"["<<row<<"]" <<"Size y :" << y_size << " Size x: " << x_size << std::endl;
+            // cout <<"? ["<<col<<"]"<<"["<<row<<"]" <<"Size y :" << y_size << " Size x: " << x_size << endl;
             if (check_sector(col,row,y_size,x_size, 0))
             {
-                // std::cout <<"✅ ["<<col<<"]"<<"["<<row<<"]" <<"Size y :" << y_size << " Size x: " << x_size << std::endl;
+                // cout <<"✅ ["<<col<<"]"<<"["<<row<<"]" <<"Size y :" << y_size << " Size x: " << x_size << endl;
                 check_sector(col,row,y_size,x_size, 1);
                 // this->kmap_unchecked[col][row] = false;
                 return true;
             }
             else
-                // std::cout <<"❌ ["<<col<<"]"<<"["<<row<<"]" <<"Size y :" << y_size << " Size x: " << x_size << std::endl;
+                // cout <<"❌ ["<<col<<"]"<<"["<<row<<"]" <<"Size y :" << y_size << " Size x: " << x_size << endl;
             y_size = y_size * 2;
             x_size = x_size / 2;
         }
@@ -196,20 +196,20 @@ bool Kargnauth_Map::find_aceptable_group (int col, int row)
 }
 
 
-std::string Kargnauth_Map::kmap_agrupations()
+string Kargnauth_Map::kmap_agrupations()
 {
     size_t size_rows = this->kmap.size();
     size_t size_cols = this->kmap[0].size();
     this->kmap_unchecked = this->kmap;
 
-    // std::cout << "Mapa Real    Tamaño:" << this->kmap_unchecked.size() << " & " << this->kmap_unchecked[0].size() << std::endl;
-    // std::cout << "Mapa Uncheck Tamaño:" << this->kmap.size() << " & " << this->kmap[0].size() << std::endl;
+    // cout << "Mapa Real    Tamaño:" << this->kmap_unchecked.size() << " & " << this->kmap_unchecked[0].size() << endl;
+    // cout << "Mapa Uncheck Tamaño:" << this->kmap.size() << " & " << this->kmap[0].size() << endl;
 
     for (size_t i = 0; i < size_rows; i++)
     {
         for (size_t j = 0; j < size_cols; j++)
         {
-            // std::cout << "Moves to : " << i<< ":" << j << " -> " << this->kmap[i][j] << this->kmap_unchecked[i][j]<< std::endl;
+            // cout << "Moves to : " << i<< ":" << j << " -> " << this->kmap[i][j] << this->kmap_unchecked[i][j]<< endl;
             if ( this->kmap[i][j] == true && this->kmap_unchecked[i][j] == true) //CHECK IF that hold is not being checked
             {
                 find_aceptable_group(i,j);
@@ -222,10 +222,10 @@ std::string Kargnauth_Map::kmap_agrupations()
 
 
 
-std::vector<std::vector<int>> generateGrayCode(int amount_variables) {
+vector<vector<int>> generateGrayCode(int amount_variables) {
     int mask ,code ;
     int size = 1 << amount_variables;  // 2^n
-    std::vector<std::vector<int>> gray(size, std::vector<int>(amount_variables));
+    vector<vector<int>> gray(size, vector<int>(amount_variables));
 
     for (int i = 0; i < size; i++) {
         code = grey_map(i);
@@ -241,10 +241,10 @@ std::vector<std::vector<int>> generateGrayCode(int amount_variables) {
     return gray;
 }
 
-std::vector<int> Kargnauth_Map::detectChanges(const std::vector<std::vector<int>> gray, std::set<int> columns) {
+vector<int> Kargnauth_Map::detectChanges(const vector<vector<int>> gray, set<int> columns) {
     bool same;
     int n = gray[0].size();
-    std::vector<int> result(n, 2);  // 0=fixed as negative, 1=fixed as positive 1, 2=changes/not what we want
+    vector<int> result(n, 2);  // 0=fixed as negative, 1=fixed as positive 1, 2=changes/not what we want
     int firstBit;
     int firstIndex = *columns.begin();
 
@@ -269,18 +269,18 @@ std::vector<int> Kargnauth_Map::detectChanges(const std::vector<std::vector<int>
 }
 
 
-void Kargnauth_Map::appendVarsRPN( const std::vector<int>& changes, const std::vector<std::string>& vars, std::string& out, int& varsCount)
+void Kargnauth_Map::appendVarsRPN( const vector<int>& changes, const vector<string>& vars, string& out, int& varsCount)
 {
     for (size_t i = 0; i < changes.size(); i++) {
 
-        if (DEBUG) {
-            if (changes[i] == 0)
-                std::cout << "Var " << vars[i] << " = 0" << std::endl;
-            else if (changes[i] == 1)
-                std::cout << "Var " << vars[i] << " = 1" << std::endl;
-            else
-                std::cout << "Var " << vars[i] << " = don't care" << std::endl;
-        }
+        // if (DEBUG) {
+        //     if (changes[i] == 0)
+        //         cout << "Var " << vars[i] << " = 0" << endl;
+        //     else if (changes[i] == 1)
+        //         cout << "Var " << vars[i] << " = 1" << endl;
+        //     else
+        //         cout << "Var " << vars[i] << " = don't care" << endl;
+        // }
 
         if (changes[i] == 2)
             continue;
@@ -293,13 +293,13 @@ void Kargnauth_Map::appendVarsRPN( const std::vector<int>& changes, const std::v
     }
 }
 
-std::string Kargnauth_Map::elavorate_formula()
+string Kargnauth_Map::elavorate_formula()
 {
-    std::vector<std::vector<int>> aux_left, aux_right;
-    std::vector<int> result;
-    std::string formula, aux;
+    vector<vector<int>> aux_left, aux_right;
+    vector<int> result;
+    string formula, aux;
     int varsCount;
-    std::vector<std::string> terms;
+    vector<string> terms;
 
     aux_left  = generateGrayCode(kmap_rows_vars.size());
     aux_right = generateGrayCode(kmap_cols_vars.size());
@@ -309,8 +309,8 @@ std::string Kargnauth_Map::elavorate_formula()
         aux = "";
         varsCount = 0;
 
-        if (DEBUG)
-            this->validated_areas[x].visualize();
+        // if (DEBUG)
+        //     this->validated_areas[x].visualize();
 
         result = this->detectChanges(aux_left, this->validated_areas[x].columns);
         this->appendVarsRPN(result,kmap_rows_vars,aux,varsCount);
@@ -331,8 +331,8 @@ std::string Kargnauth_Map::elavorate_formula()
             formula += "| ";
     }
 
-    // std::cout << "Formula Original : " << tree.printInOrderMath() << std::endl;
-    // std::cout << "Formula Simple   : " << formula_rpn << std::endl;
+    // cout << "Formula Original : " << tree.printInOrderMath() << endl;
+    // cout << "Formula Simple   : " << formula_rpn << endl;
     return formula;
 }
 
